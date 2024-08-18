@@ -37,9 +37,12 @@ def print_log(frame, stack=None, palette=None):
     """
     if stack is None:
         stack = []
-    item = f"{frame.function}:{frame.file_path_short}:{frame.line_no}"
+    item = f"{frame.function}\u2002\u2002{frame.file_path_short}:{frame.line_no}"
     if palette is not None and item not in palette:
-        package = frame.file_path_short.partition('/')[0]
+        if frame.file_path_short is None:
+            package = ''
+        else:
+            package = frame.file_path_short.partition('/')[0]
         palette[item] = color_from_string(package)
     stack.append(item)
     total_time = frame.time
