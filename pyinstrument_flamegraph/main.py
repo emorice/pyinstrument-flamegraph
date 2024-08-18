@@ -83,7 +83,7 @@ class FlameGraphRenderer(JSONRenderer):
                 with open('palette.map', 'w', encoding='utf8') as fd:
                     print_palette(palette, fd)
                 svg = subprocess.check_output([
-                    flamegraph_pl, '--cp', 'profile.log'
+                    flamegraph_pl, '--cp', 'profile.log', '--countname', 'ms'
                     ], encoding='utf8')
             finally:
                 os.chdir(pwd)
