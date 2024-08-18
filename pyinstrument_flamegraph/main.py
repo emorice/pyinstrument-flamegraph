@@ -31,29 +31,28 @@ def color_from_string(string):
     s_value = int.from_bytes(md5[2:4]) / 2**16
     return color(h_value, s_value)
 
-def print_log(frame, stack=None, palette=None):
+def print_log(frame, palette=None):
     """
-    Recursive helper to write the frames
+    Helper to write the frames in flamegraph format
     """
-    if stack is None:
-        stack = []
-    item = f"{frame.function}\u2002\u2002{frame.file_path_short}:{frame.line_no}"
-    if palette is not None and item not in palette:
-        if frame.file_path_short is None:
-            package = ''
-        else:
-            package = frame.file_path_short.partition('/')[0]
-        palette[item] = color_from_string(package)
-    stack.append(item)
-    total_time = frame.time
-    child_time = sum(f.time for f in frame.children)
-    own_time = max(total_time - child_time, 0.0)
-    lines = [
-            f'{";".join(stack)} {own_time * 1000:f}'
-        ]
-    for child in frame.children:
-        lines.extend(print_log(child, stack, palette))
-    stack.pop()
+    frames = [([], frame)]
+    lines = []
+    while frames:
+        parent_stack, frame = frames.pop()
+        item = f"{frame.function}\u2002\u2002{frame.file_path_short}:{frame.line_no}"
+        if palette is not None and item not in palette:
+            if frame.file_path_short is None:
+                package = ''
+            else:
+                package = frame.file_path_short.partition('/')[0]
+            palette[item] = color_from_string(package)
+        stack = (*parent_stack, item)
+        child_time = sum(f.time for f in frame.children)
+        own_time = max(frame.time - child_time, 0.0)
+        lines.append(
+                f'{";".join(stack)} {own_time * 1000:f}'
+            )
+        frames.extend((stack, child) for child in frame.children)
     return lines
 
 def print_palette(palette, file):
