@@ -1,0 +1,13 @@
+[project]
+name = "pyinstrument-flamegraph"
+version = "0.0.1"
+description = "Glue code between pyinstrument and flamegraph.pl"
+dependencies = [
+  "pyinstrument"
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.hooks.custom]
