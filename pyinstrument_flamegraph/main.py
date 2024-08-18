@@ -8,7 +8,8 @@ import tempfile
 import subprocess
 import importlib.resources
 
-from pyinstrument.renderers import JSONRenderer
+from pyinstrument.renderers import FrameRenderer
+from pyinstrument import processors
 
 def color(h, s):
     """Rotating color"""
@@ -57,13 +58,10 @@ def print_palette(palette, file):
     for frame, rgb in palette.items():
         print(f'{frame}->rgb({",".join(map(str, rgb))})', file=file)
 
-class FlameGraphRenderer(JSONRenderer):
+class FlameGraphRenderer(FrameRenderer):
     """
-    Initialize base json renderer but set show_all to True by default
+    Render as flame graph
     """
-    def __init__(self, *args, show_all=True, **kwargs):
-        super().__init__(*args, show_all=show_all, **kwargs)
-
     def render(self, session):
         """
         Write flamegraph inputs to a temporary directory, move there, run the
@@ -88,3 +86,22 @@ class FlameGraphRenderer(JSONRenderer):
             finally:
                 os.chdir(pwd)
         return svg
+
+    def default_processors(self):
+        """
+        List of processors.
+
+        We mostly remove hiding small nodes
+        """
+        return [
+                processors.remove_importlib,
+                processors.remove_tracebackhide,
+                processors.merge_consecutive_self_time,
+                processors.aggregate_repeated_calls,
+                processors.remove_unnecessary_self_time_nodes,
+                # On a graph small nodes already take little space, so no need to
+                # hide them
+                # processors.remove_irrelevant_nodes,
+                processors.remove_first_pyinstrument_frames_processor,
+                processors.group_library_frames_processor,
+                ]
