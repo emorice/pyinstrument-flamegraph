@@ -10,13 +10,25 @@ import importlib.resources
 
 from pyinstrument.renderers import JSONRenderer
 
-def color(x):
+def color(h, s):
     """Rotating color"""
-    theta = 2 * math.pi * x
-    red = int(128 * (1 + .999 * math.cos(theta)))
-    green = int(128 * (1 + .999 * math.cos(theta - 2*math.pi/3)))
-    blue = int(128 * (1 + .999 * math.cos(theta + 2*math.pi/3)))
+    # Uniform s means a lot of neutral colors, bias towards saturated
+    s = .5 + .5 * s
+    v = .75
+    # Rotate through r/g/b according to h, shrink towards grey according
+    # to s, and keep v constant
+    theta = 2 * math.pi * h
+    red   = int(256 * v * (1 - .5 * s * (1 - math.cos(theta              ))))
+    green = int(256 * v * (1 - .5 * s * (1 - math.cos(theta - 2*math.pi/3))))
+    blue  = int(256 * v * (1 - .5 * s * (1 - math.cos(theta + 2*math.pi/3))))
     return red, green, blue
+
+def color_from_string(string):
+    """Random h and s"""
+    md5 = hashlib.md5(string.encode('utf8')).digest()
+    h_value = int.from_bytes(md5[:2]) / 2**16
+    s_value = int.from_bytes(md5[2:4]) / 2**16
+    return color(h_value, s_value)
 
 def print_log(frame, stack=None, palette=None):
     """
@@ -26,12 +38,8 @@ def print_log(frame, stack=None, palette=None):
         stack = []
     item = f"{frame.function}:{frame.file_path_short}:{frame.line_no}"
     if palette is not None and item not in palette:
-        x_color = int.from_bytes(
-                hashlib.md5(
-                    frame.file_path_short.encode('utf8')
-                ).digest()[-2:]
-                ) / 2**16
-        palette[item] = color(x_color)
+        package = frame.file_path_short.partition('/')[0]
+        palette[item] = color_from_string(package)
     stack.append(item)
     total_time = frame.time
     child_time = sum(f.time for f in frame.children)
