@@ -67,24 +67,24 @@ class FlameGraphRenderer(FrameRenderer):
         Write flamegraph inputs to a temporary directory, move there, run the
         packaged flamegraph and return the svg output
         """
-        flamegraph_pl = importlib.resources.files() / 'flamegraph.pl'
+        flamegraph_path = importlib.resources.files() / 'flamegraph.pl'
         frame = self.preprocess(session.root_frame())
         palette = {}
         lines = print_log(frame, palette=palette)
-        pwd = os.getcwd()
+        # palette.map is hardcoded, so work in a tempdir
         with tempfile.TemporaryDirectory() as dirpath:
-            os.chdir(dirpath)
-            try:
-                with open('profile.log', 'w', encoding='utf8') as fd:
-                    fd.write('\n'.join(lines) + '\n')
-                # Palette.map is hardcoded, hence the temp dir chdir
-                with open('palette.map', 'w', encoding='utf8') as fd:
-                    print_palette(palette, fd)
+            with open(
+                    os.path.join(dirpath, 'profile.log'),
+                    'w', encoding='utf8') as fd:
+                fd.write('\n'.join(lines) + '\n')
+            with open(
+                    os.path.join(dirpath, 'palette.map'),
+                    'w', encoding='utf8') as fd:
+                print_palette(palette, fd)
+            with importlib.resources.as_file(flamegraph_path) as flamegraph_pl:
                 svg = subprocess.check_output([
                     flamegraph_pl, '--cp', 'profile.log', '--countname', 'ms'
-                    ], encoding='utf8')
-            finally:
-                os.chdir(pwd)
+                    ], cwd=dirpath, encoding='utf8')
         return svg
 
     def default_processors(self):
