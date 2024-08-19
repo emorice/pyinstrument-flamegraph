@@ -10,6 +10,7 @@ import importlib.resources
 
 from pyinstrument.renderers import FrameRenderer
 from pyinstrument import processors
+import pyinstrument_flamegraph
 
 def color(h, s):
     """Rotating color"""
@@ -27,8 +28,8 @@ def color(h, s):
 def color_from_string(string):
     """Random h and s"""
     md5 = hashlib.md5(string.encode('utf8')).digest()
-    h_value = int.from_bytes(md5[:2]) / 2**16
-    s_value = int.from_bytes(md5[2:4]) / 2**16
+    h_value = int.from_bytes(md5[:2], 'little') / 2**16
+    s_value = int.from_bytes(md5[2:4], 'little') / 2**16
     return color(h_value, s_value)
 
 def print_log(frame, palette=None):
@@ -69,7 +70,8 @@ class FlameGraphRenderer(FrameRenderer):
         Write flamegraph inputs to a temporary directory, move there, run the
         packaged flamegraph and return the svg output
         """
-        flamegraph_path = importlib.resources.files() / 'flamegraph.pl'
+
+        flamegraph_path = importlib.resources.files(pyinstrument_flamegraph) / 'flamegraph.pl'
         frame = self.preprocess(session.root_frame())
         palette = {}
         lines = print_log(frame, palette=palette)
