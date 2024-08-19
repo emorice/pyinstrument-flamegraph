@@ -1,5 +1,8 @@
 # FlameGraph renderer for Pyinstrument
 
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Femorice%2Fpyinstrument-flamegraph%2Fmaster%2Fpyproject.toml) [![Tests](https://github.com/emorice/gemz/actions/workflows/test.yml/badge.svg)](https://github.com/emorice/gemz/actions/workflows/test.yml)
+
+
 FrameRenderer plugin for [Pyinstrument](https://github.com/joerick/pyinstrument), which generates interactive SVG flamegraphs with the original `flamegraph.pl` generator of [FlameGraph](https://github.com/brendangregg/FlameGraph/). Installing this package will download `flamegraph.pl` as an automated installation step, by installing or using pyinstrument-flamegraph you also agree to the original license of FlameGraph.
 
 Installation:
