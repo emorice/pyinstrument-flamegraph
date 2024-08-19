@@ -2,6 +2,7 @@
 name = "pyinstrument-flamegraph"
 version = "0.0.1"
 description = "Glue code between pyinstrument and flamegraph.pl"
+requires-python = ">= 3.9"
 dependencies = [
   "pyinstrument"
 ]
