@@ -1,4 +1,4 @@
-![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Femorice%2Fpyinstrument-flamegraph%2Fmaster%2Fpyproject.toml) [![Tests](https://github.com/emorice/pyinstrument-flamegraph/actions/workflows/tox.yml/badge.svg)](https://github.com/emorice/gemz/actions/workflows/test.yml)
+![Python Version from PEP 621 TOML](https://img.shields.io/python/required-version-toml?tomlFilePath=https%3A%2F%2Fraw.githubusercontent.com%2Femorice%2Fpyinstrument-flamegraph%2Fmaster%2Fpyproject.toml) [![Python package](https://github.com/emorice/pyinstrument-flamegraph/actions/workflows/tox.yml/badge.svg)](https://github.com/emorice/pyinstrument-flamegraph/actions/workflows/tox.yml)
 
 # FlameGraph renderer for Pyinstrument
 
