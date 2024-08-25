@@ -10,7 +10,8 @@ dependencies = [
 [project.optional-dependencies]
 test = [
   "tox",
-  "pytest"
+  "pytest",
+  "hatchling"
 ]
 
 [build-system]
