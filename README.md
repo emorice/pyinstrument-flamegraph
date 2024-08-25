@@ -17,3 +17,13 @@ This package provides a `pyinstrument.FlameGraphRenderer` class that can be used
 pyinstrument -o profile.svg -r pyinstrument_flamegraph.FlameGraphRenderer script.py
 ```
 You can then open `profile.svg` in your browser and explore. Frames are deterministically colored by module name.
+
+To profile only a chunk of code, since using a custom renderer is not as
+straighforward, a `flamegraph(...)` context manager is provided:
+```
+from pyinstrument_flamegraph import flamegraph
+
+with flamegraph('path/to/output.svg'):
+    some_code_to_profile()
+    ...
+```

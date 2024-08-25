@@ -7,9 +7,11 @@ import hashlib
 import tempfile
 import subprocess
 import importlib.resources
+from contextlib import contextmanager
+from typing import Optional
 
 from pyinstrument.renderers import FrameRenderer
-from pyinstrument import processors
+from pyinstrument import processors, Profiler
 import pyinstrument_flamegraph
 
 def color(h, s):
@@ -109,3 +111,27 @@ class FlameGraphRenderer(FrameRenderer):
                 processors.remove_first_pyinstrument_frames_processor,
                 processors.group_library_frames_processor,
                 ]
+
+@contextmanager
+def flamegraph(path: str, profiler_options: Optional[dict] = None,
+               renderer_options: Optional[dict] = None):
+    """
+    Helper context manager to profile a section of code
+
+    Args:
+        path: where to save the svg graph
+        profiler_options: dictionary of arguments to pass to
+            pyinstrument.Profiler
+        renderer_options: dictionary of arguments to pass to FlameGraphRenderer,
+            in turn the same that for pyinstrument.renderers.FrameRenderer
+    """
+    profiler = Profiler(**(profiler_options or {}))
+    profiler.start()
+    try:
+        yield
+    finally:
+        profiler.stop()
+        with open(path, 'w', encoding='utf8') as stm:
+            stm.write(profiler.output(
+                FlameGraphRenderer(**(renderer_options or {})
+                                   )))

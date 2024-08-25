@@ -1,1 +1,1 @@
-from .main import FlameGraphRenderer
+from .main import FlameGraphRenderer, flamegraph
