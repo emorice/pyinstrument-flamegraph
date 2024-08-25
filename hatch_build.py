@@ -19,11 +19,25 @@ class DownloadFlamegraphBuildHook(BuildHookInterface):
     def initialize(self, version: str, build_data: dict[str, Any]):
         del version
         del build_data
+
+        # Download
         urlretrieve(URL, TARGET)
+
+        # Check hash. Code adapted from hashlib.file_digest, backporting to
+        # older python versions
+        digest = hashlib.sha256()
+        buf = bytearray(2**18)
+        view = memoryview(buf)
         with open(TARGET, 'rb') as fd:
-            obs_sha = hashlib.file_digest(fd, "sha256").hexdigest()
-        if obs_sha != SHA256:
+            while True:
+                size = fd.readinto(buf)
+                if size == 0:
+                    break
+                digest.update(view[:size])
+        if digest.hexdigest() != SHA256:
             raise RuntimeError('Bad checksum for flamegraph.pl')
+
+        # Make executable
         # https://stackoverflow.com/a/30463972
         mode = os.stat(TARGET).st_mode
         mode |= (mode & 0o444) >> 2    # copy R bits to X
