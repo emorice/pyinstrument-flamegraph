@@ -1,2 +1,4 @@
 __pycache__
 pyinstrument_flamegraph/flamegraph.pl
+venv
+.tox
