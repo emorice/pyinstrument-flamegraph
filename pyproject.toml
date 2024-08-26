@@ -2,6 +2,8 @@
 name = "pyinstrument-flamegraph"
 version = "0.0.1"
 description = "Glue code between pyinstrument and flamegraph.pl"
+authors = [{name = "Étienne Morice", email = "etienne.morice@mpinat.mpg.de"}]
+readme = "README.md"
 requires-python = ">= 3.9"
 dependencies = [
   "pyinstrument"
@@ -22,3 +24,23 @@ build-backend = "hatchling.build"
 "pyinstrument_flamegraph/flamegraph.pl" = "pyinstrument_flamegraph/flamegraph.pl"
 
 [tool.hatch.build.hooks.custom]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+env_list = py39,py310,py311,py312,py313
+
+[testenv]
+description = run the tests with pytest
+deps =
+    pytest
+commands = pytest {tty:--color=yes} {posargs}
+
+[gh-actions]
+python =
+    3.9: py39
+    3.10: py310
+    3.11: py311
+    3.12: py312
+    3.13: py313
+"""
